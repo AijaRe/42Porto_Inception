@@ -11,11 +11,16 @@ services:
     wordpress:
         build: requirements/wordpress/.
         container_name: wordpress
+        depends_on:
+        - mariadb
         restart: on-failure
         env_file:
         - .env
         expose:
         - "9000"
+        volumes:
+        # Mount wp-content for persistent uploads, themes, plugins
+        - wp_content:/var/www/html/wp-content
     
     mariadb:
         build: requirements/mariadb/.
@@ -25,3 +30,9 @@ services:
         - .env
         expose:
         - "3306"
+        volumes:
+        - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
+  wp_content:

@@ -1,5 +1,5 @@
 # penultimate stable version in april 2025
-FROM debian:bullseye
+FROM debian:bullseye-slim
 
 # Set Wordpress version
 ARG WP_VERSION=6.7.1
@@ -14,9 +14,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 # php-mysql - for MySQL database connection
 # mariadb-client - for wp-cli database management
 RUN apt update && apt install -y --no-install-recommends \
+	gosu \
 	wget \
 	php7.4-fpm \
 	php7.4-mysql \
+	php7.4-gd \
 	mariadb-client \
 	tar \
 	# cleanup
@@ -29,13 +31,17 @@ RUN wget -q https://wordpress.org/wordpress-${WP_VERSION}.tar.gz \
 	&& mv wordpress /var/www/html/ \
 	&& chown -R www-data:www-data /var/www/html/ \
 	&& chmod -R 755 /var/www/html/
+	&& find /var/www/html/wp-content -type d -exec chmod 755 {} \; \
+    && find /var/www/html/wp-content -type f -exec chmod 644 {} \;
 
 # Download and install wp-cli
 RUN wget -q https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
 	&& chmod +x wp-cli.phar \
 	&& mv wp-cli.phar /usr/local/bin/wp \
-	&& mkdir -p /var/www/html/.wp-cli/cache/ \
+	# create wp-cli cache/config dir owned by www-data
+	&& mkdir -p /home/www-data/.wp-cli/cache \
 	&& mkdir -p /var/www/html/wp-content/uploads/ \
+	&& chown -R www-data:www-data /home/www-data/.wp-cli \
 	&& chown -R www-data:www-data /var/www/html/.wp-cli \
 	&& chmod -R 755 /var/www/html/.wp-cli
 
@@ -52,5 +58,7 @@ RUN chmod +x /usr/local/bin/wp_exec.sh
 EXPOSE 9000
 
 # Set the entrypoint to the script
-# Run php-fpm in foreground mode to prevent daemonizing 
-ENTRYPOINT ["/usr/local/bin/wp_exec.sh", "php-fpm7.4", "-F"]
+# Run php-fpm in foreground mode (to prevent daemonizing) as the final command via exec in the script
+ENTRYPOINT ["/usr/local/bin/wp_exec.sh"]
+# Pass php-fpm command as CMD, so it can be overridden if needed
+CMD ["php-fpm7.4", "-F"]

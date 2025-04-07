@@ -1,5 +1,5 @@
 # penultimate stable version in april 2025
-FROM debian:bullseye
+FROM debian:bullseye/-slim
 
 RUN apt update && apt install -y nginx openssl
 

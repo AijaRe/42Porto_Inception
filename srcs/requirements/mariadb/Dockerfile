@@ -1,5 +1,5 @@
 # penultimate stable version in april 2025
-FROM debian:bullseye
+FROM debian:bullseye-slim
 
 # install MariaDB Server and 'gosu' to run entrypoint with mysql user
 # use --no-install-recommends to keep the image smaller
