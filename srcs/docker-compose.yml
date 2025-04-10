@@ -1,38 +1,51 @@
 services:
-    nginx:
-        build: requirements/nginx/.
-        container_name: nginx
-        restart: on-failure
-        env_file:
-        - .env
-        ports:
-        - "443:443"
+  nginx:
+    build: requirements/nginx/.
+    container_name: nginx
+    restart: on-failure
+    env_file:
+      - .env
+    ports:
+      - "443:443"
+    depends_on:
+      - wordpress
+    volumes:
+      - wp_content:/var/www/html/wp-content
+    networks:
+      - inception
 
-    wordpress:
-        build: requirements/wordpress/.
-        container_name: wordpress
-        depends_on:
-        - mariadb
-        restart: on-failure
-        env_file:
-        - .env
-        expose:
-        - "9000"
-        volumes:
-        # Mount wp-content for persistent uploads, themes, plugins
-        - wp_content:/var/www/html/wp-content
-    
-    mariadb:
-        build: requirements/mariadb/.
-        container-name: mariadb
-        restart: on-failure
-        env_file:
-        - .env
-        expose:
-        - "3306"
-        volumes:
-        - db_data:/var/lib/mysql
+  wordpress:
+    build: requirements/wordpress/.
+    container_name: wordpress
+    restart: on-failure
+    env_file:
+      - .env
+    expose:
+      - "9000"
+    depends_on:
+      - mariadb
+    volumes:
+      - wp_content:/var/www/html/wp-content
+    networks:
+      - inception
+
+  mariadb:
+    build: requirements/mariadb/.
+    container_name: mariadb
+    restart: on-failure
+    env_file:
+      - .env
+    expose:
+      - "3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - inception
 
 volumes:
   db_data:
   wp_content:
+
+networks:
+  inception:
+    driver: bridge

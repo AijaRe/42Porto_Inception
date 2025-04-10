@@ -1,0 +1,7 @@
+.vscode/
+*.log
+*.tmp
+*.sh
+Dockerfile
+wp-content/uploads/
+wp-content/cache/

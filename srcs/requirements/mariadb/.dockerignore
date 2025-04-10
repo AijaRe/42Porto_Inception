@@ -1,5 +1,6 @@
-*.pem
-*.key
+*.sql
+*.sql.gz
+*.dump
 .vscode/
 *.log
 *.tmp

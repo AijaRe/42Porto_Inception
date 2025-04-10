@@ -1,10 +1,7 @@
 # penultimate stable version in april 2025
-FROM debian:bullseye/-slim
+FROM debian:bullseye-slim
 
 RUN apt update && apt install -y nginx openssl
-
-ARG DOMAIN_NAME=arepsa@42.fr
-ARG USER=arepsa
 
 RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 -keyout /etc/ssl/nginx-selfsigned.key \
