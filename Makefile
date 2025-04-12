@@ -11,14 +11,22 @@
 # **************************************************************************** #
 
 COMPOSE_FILE = ./srcs/docker-compose.yml
-ENV_FILE = ./src/.env
+ENV_FILE = ./srcs/.env
 
 # Load ennvironment variables from .env file
-ifneq ($(wildcard $(ENV_FILE)),)
-    @echo "Loading environment variables from $(ENV_FILE)..."
-    include $(ENV_FILE)
+ifneq ($(wildcard ${ENV_FILE}),)
+$(info Loading environment variables from $(ENV_FILE)...)
+include ${ENV_FILE}
 else
-    @echo "Error: Environment file not found. Please create it."
+$(error Environment file not found. Please create it.)
+endif
+
+ifndef USER
+$(error USER variable is not defined in $(ENV_FILE).)
+endif
+
+ifndef DOMAIN_NAME
+$(error DOMAIN_NAME variable is not defined in $(ENV_FILE).)
 endif
 
 DOMAIN_NAME = ${DOMAIN_NAME}
@@ -56,16 +64,9 @@ re: down build up
 
 # Create host directories if they don't exist and first make sure there is .env file
 create_dirs:
-	if (! test -f ${ENV_FILE}); then \
-		echo "Error: Environment file not found. Please create it."; \
-		exit 1; \
-	fi
+	test -f ${ENV_FILE} || (echo "Error: Environment file not found. Please create it."; exit 1)
 	mkdir -p ${WP_DATA}
 	mkdir -p ${DB_DATA}
 	@echo "Data directories created."
 
-.PHONY all build up down clean fclean re create_dirs
-
-	
-
-	
+.PHONY: all build up down clean fclean re create_dirs
