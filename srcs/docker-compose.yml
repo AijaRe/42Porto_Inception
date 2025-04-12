@@ -11,7 +11,7 @@ services:
     depends_on:
       - wordpress
     volumes:
-      - /home/${USER}/data/wordpress:/var/www/html:rw
+      - wordpress:/var/www/wordpress
     networks:
       - inception
 
@@ -26,7 +26,7 @@ services:
     depends_on:
       - mariadb
     volumes:
-      - /home/${USER}/data/wordpress:/var/www/html:rw
+      - wordpress:/var/www/wordpress
     networks:
       - inception
 
@@ -39,10 +39,22 @@ services:
     expose:
       - "3306"
     volumes:
-      - /home/${USER}/data/mariadb:/var/lib/mysql:rw
+      - mariadb:/var/lib/mysql
     networks:
       - inception
 
 networks:
   inception:
     driver: bridge
+
+volumes:
+  wordpress:
+    driver: local
+    type: 'none'
+    o: bind
+    device: 'users/${USER}/data/wordpress'
+  mariadb:
+    driver: local
+    type: 'none'
+    o: bind
+    device: 'users/${USER}/data/mariadb'
