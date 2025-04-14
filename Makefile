@@ -56,7 +56,7 @@ fclean: clean
 	@echo "Pruning Docker system (unused containers, networks, images, build cache)..."
 	docker system prune -af
 	@echo "Removing host data directories..."
-	rm -rf ${WP_DATA} ${DB_DATA}
+	sudo rm -rf ${WP_DATA} ${DB_DATA}
 	@echo "All images and host data removed."
 
 # Restart
@@ -64,9 +64,23 @@ re: down build up
 
 # Create host directories if they don't exist and first make sure there is .env file
 create_dirs:
-	test -f ${ENV_FILE} || (echo "Error: Environment file not found. Please create it."; exit 1)
 	mkdir -p ${WP_DATA}
 	mkdir -p ${DB_DATA}
 	@echo "Data directories created."
+
+maria:
+	docker compose -f ${COMPOSE_FILE} up -d --no-deps --build mariadb
+
+nginx:
+	docker compose -f ${COMPOSE_FILE} up -d --no-deps --build nginx
+
+wp:
+	docker compose -f ${COMPOSE_FILE} up -d --no-deps --build wordpress
+
+status:
+	docker compose -f ${COMPOSE_FILE} ps
+	docker image ls
+	docker volume ls
+	docker network ls
 
 .PHONY: all build up down clean fclean re create_dirs
