@@ -3,7 +3,7 @@ FROM debian:bullseye-slim
 
 # Set Wordpress version
 ARG WP_VERSION=6.7.1
-ARG WP_CLI_VERSION=2.11.0
+# ARG WP_CLI_VERSION=2.11.0
 
 # Install necessary packages
 # wget - for downloading files (Wordpress and wp-cli)
@@ -19,23 +19,25 @@ RUN apt update && apt install -y --no-install-recommends \
 	php7.4-gd \
 	mariadb-client \
 	tar \
+	rsync \
 	# cleanup
 	&& rm -rf /var/lib/apt/lists/*
 
 # Prepare target directory
-RUN mkdir -p /var/www/html
+RUN mkdir -p /var/www/html \
+	&& mkdir -p /usr/src/wordpress
 
 # Download and extract Wordpress
 RUN wget https://wordpress.org/wordpress-${WP_VERSION}.tar.gz -O wordpress.tar.gz \
-	&& tar -xzf wordpress.tar.gz \
-	&& rm wordpress.tar.gz \
-	&& mv wordpress /var/www/html/
+	&& tar -xzf wordpress.tar.gz --strip-components=1 -C /usr/src/wordpress \
+	&& rm wordpress.tar.gz
+	
 # Set permissions for Wordpress files
-RUN chown -R www-data:www-data /var/www/html/ \
-	&& chmod -R 755 /var/www/html/ \
-	&& mkdir -p /var/www/html/wp-content/ \
-	&& find /var/www/html/wp-content -type d -exec chmod 755 {} \; \
-    && find /var/www/html/wp-content -type f -exec chmod 644 {} \;
+#RUN chown -R www-data:www-data /var/www/html/ \
+#	&& chmod -R 755 /var/www/html/ \
+#	&& mkdir -p /var/www/html/wp-content/ \
+#	&& find /var/www/html/wp-content -type d -exec chmod 755 {} \; \
+ #   && find /var/www/html/wp-content -type f -exec chmod 644 {} \;
 
 # Download and install wp-cli
 RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
@@ -43,9 +45,10 @@ RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.ph
 	&& mv wp-cli.phar /usr/local/bin/wp
 # Create wp-cli cache/config dir owned by www-data
 RUN mkdir -p /home/www-data/.wp-cli/cache \
-	&& mkdir -p /var/www/html/wp-content/uploads/ \
-	&& mkdir -p /var/www/html/.wp-cli \
-	&& chown -R www-data:www-data /home/www-data/.wp-cli /var/www/html/.wp-cli
+	&& chown -R www-data:www-data /home/www-data/.wp-cli
+#	&& mkdir -p /var/www/html/wp-content/uploads/ \
+#	&& mkdir -p /var/www/html/.wp-cli \
+#	&& chown -R www-data:www-data /var/www/html/.wp-cli
 
 # Configure PHP-FPM
 COPY ./conf/www.conf /etc/php/7.4/fpm/pool.d/www.conf

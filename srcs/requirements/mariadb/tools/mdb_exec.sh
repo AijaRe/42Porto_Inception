@@ -34,4 +34,4 @@ else
 fi
 
 echo "INFO: Starting MariaDB server..."
-exec gosu mysql mysqld_safe
+exec gosu mysql mysqld

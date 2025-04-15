@@ -12,13 +12,13 @@ RUN apt update && apt install -y --no-install-recommends \
 COPY conf/50-server.cnf /etc/mysql/mariadb.conf.d/
 RUN chmod 644 /etc/mysql/mariadb.conf.d/50-server.cnf
 
-COPY tools/mdb_exec.sh /bin/
+COPY tools/mdb_exec.sh /usr/local/bin/
 
-RUN chmod +x /bin/mdb_exec.sh
+RUN chmod +x /usr/local/bin/mdb_exec.sh
 
 EXPOSE 3306
 
 # define the location of database data as a volume for data persistance
 VOLUME /var/lib/mysql
 
-ENTRYPOINT ["mdb_exec.sh"]
+ENTRYPOINT ["/usr/local/bin/mdb_exec.sh"]

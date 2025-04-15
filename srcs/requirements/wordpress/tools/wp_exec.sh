@@ -3,13 +3,33 @@
 # exit immediately if a command exits with a non-zero status.
 set -e
 
+# Check if the target directory is not empty or doesn't have core WP files
+if ! [ -e "/var/www/html/wp-includes/version.php" ]; then
+    echo "WordPress not found in /var/www/html - copying files..."
+    # Use rsync to copy files and preserve attributes if possible
+    # Using '.' ensures contents of source dir are copied into target dir
+    rsync -a --chown=www-data:www-data /usr/src/wordpress/. /var/www/html/
+    echo "WordPress files copied."
+else
+    echo "WordPress installation found in /var/www/html."
+fi
+
+# Set base permissions and ownership
+echo "Ensuring base permissions..."
+chown -R www-data:www-data /var/www/html
+chmod -R 755 /var/www/html/
+mkdir -p /var/www/html/wp-content/
+find /var/www/html/wp-content -type d -exec chmod 755 {} \;
+find /var/www/html/wp-content -type f -exec chmod 644 {} \;
+
 # function to wait for the database connection
 wait_for_db() {
     echo "Waiting for database connection at $DB_HOST..."
     local max_attempts=10
     local attempt=1
+    echo "Using DB creds: host=$DB_HOST, user=$DB_USER, db=$DB_NAME"
     
-    while ! gosu www-data wp db check --quiet --path=/var/www/html --dbhost="$DB_HOST" --dbname="$DB_NAME" --dbuser="$DB_USER" --dbpass="$DB_PASSWORD" > /dev/null 2>&1; do
+    while ! mysqladmin ping -h"$DB_HOST" -u"$DB_USER" -p"$DB_PASSWORD" --silent; do
         if [ $attempt -ge $max_attempts ]; then
             echo >&2 "Error: Database connection failed after $max_attempts attempts."
             exit 1
@@ -58,6 +78,9 @@ echo "Permissions set."
 
 
 # 3. execute the main command (passed as arguments to this script)
+echo "Ensuring PHP-FPM run directory exists..."
+mkdir -p /run/php
+chown www-data:www-data /run/php
 echo "Starting PHP-FPM..."
 # use exec to replace the script process with the CMD process (php-fpm)
 # this ensures signals (like SIGTERM from 'docker stop') are passed correctly to php-fpm
