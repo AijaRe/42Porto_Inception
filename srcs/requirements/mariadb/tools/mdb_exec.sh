@@ -5,11 +5,11 @@ set -e
 echo "DEBUG: DB_NAME='${DB_NAME}'"
 echo "DEBUG: DB_USER='${DB_USER}'"
 # Check if initialized, install if not
-if [ ! -d "${DATADIR}/mysql" ]; then
+if [ ! -d /var/lib/mysql ]; then
     echo "INFO: Initializing MariaDB data directory..."
-    chown -R mysql:mysql "${DATADIR}"
-    chmod 700 "${DATADIR}"
-    mariadb-install-db --user=mysql --datadir="${DATADIR}"
+    chown -R mysql:mysql /var/lib/mysql
+    chmod 700 /var/lib/mysql
+    mariadb-install-db --user=mysql --datadir=/var/lib/mysql
     echo "INFO: MariaDB initialization complete."
 fi
 

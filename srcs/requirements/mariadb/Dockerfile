@@ -18,7 +18,4 @@ RUN chmod +x /usr/local/bin/mdb_exec.sh
 
 EXPOSE 3306
 
-# define the location of database data as a volume for data persistance
-VOLUME /var/lib/mysql
-
 ENTRYPOINT ["/usr/local/bin/mdb_exec.sh"]

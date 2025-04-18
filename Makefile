@@ -15,7 +15,6 @@ ENV_FILE = ./srcs/.env
 
 # Load ennvironment variables from .env file
 ifneq ($(wildcard ${ENV_FILE}),)
-$(info Loading environment variables from $(ENV_FILE)...)
 include ${ENV_FILE}
 else
 $(error Environment file not found. Please create it.)
@@ -49,12 +48,11 @@ down:
 
 # Remove containers and volumes
 clean:
-	docker compose -f ${COMPOSE_FILE} down --volumes --remove-orphans
-
-# Remove all images AND host data
-fclean: clean
 	@echo "Pruning Docker system (unused containers, networks, images, build cache)..."
 	docker system prune -af
+
+# Remove all images AND host data
+fclean: clean create_dirs
 	@echo "Removing host data directories..."
 	sudo rm -rf ${WP_DATA} ${DB_DATA}
 	@echo "All images and host data removed."
@@ -64,8 +62,8 @@ re: down build up
 
 # Create host directories if they don't exist and first make sure there is .env file
 create_dirs:
-	mkdir -p ${WP_DATA}
-	mkdir -p ${DB_DATA}
+	sudo mkdir -p ${WP_DATA}
+	sudo mkdir -p ${DB_DATA}
 	@echo "Data directories created."
 
 maria:

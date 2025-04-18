@@ -56,8 +56,7 @@ if [ ! -f "$WP_CONFIG_PATH" ]; then
         --dbuser="$DB_USER" \
         --dbpass="$DB_PASSWORD" \
         --dbhost="$DB_HOST" \
-        --dbprefix="$DB_PREFIX" \
-        --skip-check # skip DB check here as wait_for_db already did basic connectivity
+        --skip-check # skip DB check, cause wait_for_db already did basic connectivity
 
     # generate and set WordPress salts/keys for security
     echo "Generating WordPress security salts..."
@@ -68,7 +67,33 @@ else
     echo "wp-config.php found. Skipping configuration."
 fi
 
-# 2. ensure wp-content directory has correct permissions
+# 2. install wordpress and create users
+if ! gosu www-data wp core is-installed --path=/var/www/html; then
+    echo "WordPress not installed in database. Running installation and user creation..."
+
+    gosu www-data wp core install \
+        --url="$WP_URL" \
+        --title="$WP_SITE_TITLE" \
+        --admin_user="$WP_ADMIN_NAME" \
+        --admin_password="$WP_ADMIN_PASS" \
+        --admin_email="$WP_ADMIN_EMAIL" \
+        --path=/var/www/html
+    echo "WordPress core installed."
+
+    # Create a new user
+    if ! gosu www-data wp user get "$WP_USER_NAME" --field=ID --path=/var/www/html 2>/dev/null; then
+        gosu www-data wp user create "$WP_USER_NAME" "$WP_USER_EMAIL" \
+            --user_pass="$WP_USER_PASS" \
+            --role="$WP_USER_ROLE" \
+            --path=/var/www/html
+        echo "Second user '$WP_USER_NAME' created."
+    else
+        echo "Second user '$WP_USER_NAME' already exists. Skipping creation."
+    fi
+fi
+
+
+# 3. ensure wp-content directory has correct permissions
 echo "Ensuring correct permissions for $WP_CONTENT_DIR..."
 chown -R www-data:www-data "$WP_CONTENT_DIR"
 # set directory permissions to 755 and file permissions to 644 within wp-content
@@ -76,8 +101,7 @@ find "$WP_CONTENT_DIR" -type d -exec chmod 755 {} \;
 find "$WP_CONTENT_DIR" -type f -exec chmod 644 {} \;
 echo "Permissions set."
 
-
-# 3. execute the main command (passed as arguments to this script)
+# 4. execute the main command (passed as arguments to this script)
 echo "Ensuring PHP-FPM run directory exists..."
 mkdir -p /run/php
 chown www-data:www-data /run/php
