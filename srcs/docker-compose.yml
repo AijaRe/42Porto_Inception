@@ -10,6 +10,7 @@ services:
       - "443:443"
     depends_on:
       - wordpress
+      - adminer
     volumes:
       - wordpress:/var/www/html
     networks:
@@ -21,6 +22,10 @@ services:
     restart: on-failure
     env_file:
       - .env
+    secrets:
+      - db_pass
+      - wp_admin_pass
+      - wp_user_pass
     expose:
       - "9000"
     depends_on:
@@ -36,6 +41,8 @@ services:
     restart: on-failure
     env_file:
       - .env
+    secrets:
+      - db_pass
     expose:
       - "3306"
     volumes:
@@ -44,15 +51,23 @@ services:
       - inception
 
   adminer:
-    image: adminer
+    build: requirements/adminer/.
     container_name: adminer
     restart: on-failure
-    ports:
-      - "8080:8080"
+    expose:
+      - "9000"
     networks:
       - inception
     depends_on:
       - mariadb
+
+secrets:
+  db_pass:
+    file: ../secrets/db_pass.txt
+  wp_admin_pass:
+    file: ../secrets/wp_admin_pass.txt 
+  wp_user_pass:
+    file: ../secrets/wp_user_pass.txt
 
 networks:
   inception:

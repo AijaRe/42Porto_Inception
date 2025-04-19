@@ -21,6 +21,7 @@ RUN apt update && apt install -y --no-install-recommends \
 	tar \
 	rsync \
 	# cleanup
+	&& apt clean \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Prepare target directory

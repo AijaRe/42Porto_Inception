@@ -2,8 +2,13 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
+# Read secrets from Docker secrets
+DB_PASSWORD=$(cat /run/secrets/db_pass)
+
 echo "DEBUG: DB_NAME='${DB_NAME}'"
 echo "DEBUG: DB_USER='${DB_USER}'"
+echo "DEBUG maria: DB_PASSWORD='${DB_PASSWORD}'"
+
 # Check if initialized, install if not
 if [ ! -d /var/lib/mysql ]; then
     echo "INFO: Initializing MariaDB data directory..."

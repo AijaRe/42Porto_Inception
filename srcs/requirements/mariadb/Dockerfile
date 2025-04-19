@@ -7,6 +7,7 @@ RUN apt update && apt install -y --no-install-recommends \
     mariadb-server \
     gosu \
     # cleanup apt cache
+    && apt clean \
 	&& rm -rf /var/lib/apt/lists/*
 
 COPY conf/50-server.cnf /etc/mysql/mariadb.conf.d/

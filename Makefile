@@ -47,7 +47,7 @@ down:
 	docker compose -f ${COMPOSE_FILE} down
 
 # Remove containers and volumes
-clean:
+clean: down
 	@echo "Pruning Docker system (unused containers, networks, images, build cache)..."
 	docker system prune -af
 

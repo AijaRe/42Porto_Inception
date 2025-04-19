@@ -1,0 +1,6 @@
+*.dump
+.vscode/
+*.log
+*.tmp
+*.sh
+Dockerfile
