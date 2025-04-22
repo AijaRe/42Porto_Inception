@@ -113,6 +113,6 @@ echo "Ensuring PHP-FPM run directory exists..."
 mkdir -p /run/php
 chown www-data:www-data /run/php
 echo "Starting PHP-FPM..."
-# use exec to replace the script process with the CMD process (php-fpm)
+# use exec $@ to replace the script process with the CMD process (php-fpm)
 # this ensures signals (like SIGTERM from 'docker stop') are passed correctly to php-fpm
 exec "$@"

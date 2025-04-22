@@ -39,4 +39,4 @@ else
 fi
 
 echo "INFO: Starting MariaDB server..."
-exec gosu mysql mysqld
+exec "$@"
