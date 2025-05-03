@@ -22,4 +22,3 @@ EXPOSE 3306
 ENTRYPOINT ["/usr/local/bin/mdb_exec.sh"]
 
 CMD ["gosu", "mysql", "mysqld"]
-
