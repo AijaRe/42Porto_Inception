@@ -1,6 +1,8 @@
 # penultimate stable version in april 2025
 FROM debian:bullseye-slim
 
+ARG WP_VERSION=6.7.1
+
 # Install necessary packages
 # wget - for downloading files (Wordpress and wp-cli)
 # php-fpm - for running PHP applications
