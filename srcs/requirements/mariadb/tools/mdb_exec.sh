@@ -1,18 +1,14 @@
 #!/bin/bash
-# Exit immediately if a command exits with a non-zero status.
+# Exit immediately if a command fails (exits with a non-zero status).
 set -e
 
 # Read secrets from Docker secrets
 DB_PASSWORD=$(cat /run/secrets/db_pass)
 
-echo "DEBUG: DB_NAME='${DB_NAME}'"
-echo "DEBUG: DB_USER='${DB_USER}'"
-echo "DEBUG maria: DB_PASSWORD='${DB_PASSWORD}'"
-
 # Check if initialized, install if not
-if [ ! -d /var/lib/mysql ]; then
+if [ ! -d /var/lib/mysql/mysql ]; then
     echo "INFO: Initializing MariaDB data directory..."
-    chown -R mysql:mysql /var/lib/mysql
+    chown -R mysql:mysql /var/lib/mysql # docker created directory as root, change permission to mysql
     chmod 700 /var/lib/mysql
     mariadb-install-db --user=mysql --datadir=/var/lib/mysql
     echo "INFO: MariaDB initialization complete."
@@ -39,4 +35,5 @@ else
 fi
 
 echo "INFO: Starting MariaDB server..."
+# exec: Ensures that mysqld becomes the main process (PID 1)
 exec "$@"

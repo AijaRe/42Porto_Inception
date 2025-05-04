@@ -1,6 +1,5 @@
 #!/bin/bash
-
-# exit immediately if a command exits with a non-zero status.
+# Exit immediately if a command fails (exits with a non-zero status).
 set -e
 
 # Read secrets from Docker secrets
@@ -8,12 +7,10 @@ DB_PASSWORD=$(cat /run/secrets/db_pass)
 WP_ADMIN_PASS=$(cat /run/secrets/wp_admin_pass)
 WP_USER_PASS=$(cat /run/secrets/wp_user_pass)
 
-echo "DEBUG WP: DB_PASSWORD='${DB_PASSWORD}'"
-
 # Check if the target directory is not empty or doesn't have core WP files
 if ! [ -e "/var/www/html/wp-includes/version.php" ]; then
     echo "WordPress not found in /var/www/html - copying files..."
-    # Use rsync to copy files and preserve attributes if possible
+    # Use rsync to copy files and preserve attributes (flag -a) if possible
     # Using '.' ensures contents of source dir are copied into target dir
     rsync -a --chown=www-data:www-data /usr/src/wordpress/. /var/www/html/
     echo "WordPress files copied."

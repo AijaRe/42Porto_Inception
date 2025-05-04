@@ -10,8 +10,8 @@ RUN apt update && apt install -y --no-install-recommends \
     && apt clean \
 	&& rm -rf /var/lib/apt/lists/*
 
-COPY conf/50-server.cnf /etc/mysql/mariadb.conf.d/
-RUN chmod 644 /etc/mysql/mariadb.conf.d/50-server.cnf
+COPY conf/maria.cnf /etc/mysql/mariadb.conf.d/
+RUN chmod 644 /etc/mysql/mariadb.conf.d/maria.cnf
 
 COPY tools/mdb_exec.sh /usr/local/bin/
 
