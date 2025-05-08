@@ -1,6 +1,16 @@
-# Inception Project
+# Inception
 
 This project, "Inception," sets up a small web server infrastructure using Docker and Docker Compose. The goal is to create a secure and robust multi-container environment running WordPress, accessible via a custom domain name (`your_login.42.fr`) over HTTPS.
+
+## Useful maerials
+
+*   [**Concepts Explained (Inception Project)**](https://medium.com/@imyzf/inception-3979046d90a0)
+*   [**PID 1 and its role in Containers**](https://cloud.theodo.com/en/blog/docker-processes-container)
+*   [**Using Secrets in Docker Compose (official documentation)**](https://docs.docker.com/compose/how-tos/use-secrets/)
+*   [**Docker Best Practices for Building Images**](https://docs.docker.com/build/building/best-practices/)
+*   [**Docker CLI Cheat Sheet (PDF)**](https://docs.docker.com/get-started/docker_cheatsheet.pdf)
+*   [**Install Docker Engine on Debian (official documentation)**](https://docs.docker.com/engine/install/debian/)
+
 
 ## Overview
 
