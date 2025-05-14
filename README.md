@@ -46,10 +46,10 @@ wp_admin_pass.txt
 wp_user_pass.txt
 ```
 
-* **.env:** Create `.env` file to store environment variables and place it in the `srcs` folder, the same level as docker compose file. The `.env` should contain followinf information (replace `xxxxx` with your information):
+* **.env:** Create `.env` file to store environment variables and place it in the `srcs` folder, the same level as docker compose file. The `.env` should contain following information (replace `xxxxx` with your information):
 
 ```
-DOMAIN_NAME=To point domain name to localhost, edit /etc/hosts add the redirection of 127.0.0.1 to the IP address you want (domain name), such as xxxxx.42.fr
+DOMAIN_NAME=xxxxx.42.fr
 USER=xxxxx
 DATA_PATH=/home/${USER}/data
 # Set environment to noninteractive to avoid prompts during installation
